@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,27 +32,25 @@ public class ItunesSongListFragment extends Fragment {
     private TextView trackName;
     private TextView artistName;
     private TextView albumName;
+    private TextView mTextView;
 
     private MediaPlayer mMediaPlayer;
     private String mCurrentlyPlayingUrl;
 
     private Button mPlayButton;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private LinearLayout mLinearLayout;
     private List<Songs> mSongs;
+
+
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle saveInstanceState){
         View v = inflater.inflate(R.layout.itunes_listfragment, container, false );
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) v.findViewById(R.id.swiperefresh);
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshArticles();
-            }
-        });
-
+        mLinearLayout = (LinearLayout) v.findViewById(R.id.swiperefresh);
+        mTextView = (TextView) v.findViewById(R.id.search_result) ;
+        mTextView.setText("Searching for : " + ItunesSongSource.getQuery());
         mListView = (ListView) v.findViewById(R.id.list_view);
         mSongAdapter = new SongAdapter(getActivity());
         mListView.setAdapter(mSongAdapter);
@@ -72,7 +71,6 @@ public class ItunesSongListFragment extends Fragment {
         if (mSongs != null) {
             mSongAdapter.setItems(mSongs);
         } else {
-            mSwipeRefreshLayout.setRefreshing(true);
             refreshArticles();
         }
         return v;
@@ -84,7 +82,6 @@ public class ItunesSongListFragment extends Fragment {
             public void onSongResponse(List<Songs> songList) {
                 mSongs = songList;
                 // Stop the spinner and update the list view.
-                mSwipeRefreshLayout.setRefreshing(false);
                 mSongAdapter.setItems(songList);
             }
         });
@@ -136,6 +133,8 @@ public class ItunesSongListFragment extends Fragment {
         public void setItems(List<Songs> songsList){
             mDataSource.clear();
             mDataSource.addAll(songsList);
+            mTextView.setText("Showing results for: " + ItunesSongSource.getQuery());
+
             notifyDataSetChanged();
         }
 

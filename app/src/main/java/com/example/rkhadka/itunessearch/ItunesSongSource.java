@@ -44,6 +44,10 @@ public class ItunesSongSource {
     public static void setQuery(String query){
         mquery = query;
     }
+    public static String getQuery(){
+        return mquery;
+    }
+
     private ItunesSongSource(Context context){
         mContext = context.getApplicationContext();
         mRequestQueue = Volley.newRequestQueue(context);
